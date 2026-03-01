@@ -18,7 +18,7 @@
           :key="skill.name"
           class="group flex flex-col items-center gap-3 p-5 bg-gray-800 hover:bg-gray-750 border border-gray-700 hover:border-emerald-500/50 rounded-xl transition-all duration-500 hover:-translate-y-1 hover:shadow-lg hover:shadow-emerald-500/10"
           :class="isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"
-          :style="{ transitionDelay: isVisible ? `${index * 60}ms` : '0ms' }"
+          :style="{ transitionDelay: entranceDone ? '0ms' : (isVisible ? `${index * 60}ms` : '0ms') }"
         >
           <span class="text-3xl">{{ skill.icon }}</span>
           <span class="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">
@@ -34,6 +34,7 @@
 <script setup>
 const sectionRef = ref(null)
 const isVisible = ref(false)
+const entranceDone = ref(false)
 
 onMounted(() => {
   const observer = new IntersectionObserver(
@@ -41,6 +42,8 @@ onMounted(() => {
       if (entry.isIntersecting) {
         isVisible.value = true
         observer.disconnect()
+        // Reset delays once all entrance animations finish (last card delay + duration)
+        setTimeout(() => { entranceDone.value = true }, (skills.length - 1) * 60 + 500)
       }
     },
     { threshold: 0.1 }
