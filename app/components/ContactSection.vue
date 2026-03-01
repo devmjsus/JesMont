@@ -1,8 +1,11 @@
 <template>
-  <section id="contact" class="py-20 px-4 bg-gradient-to-br from-gray-950 via-gray-900 to-emerald-950">
+  <section id="contact" ref="sectionRef" class="py-20 px-4 bg-gradient-to-br from-gray-950 via-gray-900 to-emerald-950">
     <div class="max-w-4xl mx-auto">
       <!-- Section header -->
-      <div class="text-center mb-14">
+      <div
+        class="text-center mb-14 transition-all duration-700 ease-out"
+        :class="isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
+      >
         <span class="text-emerald-400 text-sm font-semibold tracking-widest uppercase">Contacto</span>
         <h2 class="text-3xl md:text-4xl font-bold text-white mt-2">Hablemos</h2>
         <div class="mt-4 w-16 h-1 bg-emerald-500 mx-auto rounded-full"></div>
@@ -13,15 +16,21 @@
 
       <div class="grid md:grid-cols-2 gap-10">
         <!-- Social links -->
-        <div class="flex flex-col justify-center gap-5">
+        <div
+          class="flex flex-col justify-center gap-5 transition-all duration-700 ease-out"
+          :class="isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'"
+          style="transition-delay: 200ms"
+        >
           <h3 class="text-white font-semibold text-lg mb-2">Encuéntrame en</h3>
           <a
-            v-for="link in socialLinks"
+            v-for="(link, index) in socialLinks"
             :key="link.label"
             :href="link.href"
             target="_blank"
             rel="noopener noreferrer"
             class="flex items-center gap-4 p-4 bg-gray-800/60 hover:bg-gray-800 border border-gray-700 hover:border-emerald-500/50 rounded-xl transition-all duration-200 group"
+            :class="isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'"
+            :style="{ transitionDelay: isVisible ? `${300 + index * 80}ms` : '0ms' }"
           >
             <span class="text-2xl">{{ link.icon }}</span>
             <div>
@@ -32,7 +41,12 @@
         </div>
 
         <!-- Contact form -->
-        <form class="flex flex-col gap-4" @submit.prevent>
+        <form
+          class="flex flex-col gap-4 transition-all duration-700 ease-out"
+          :class="isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'"
+          style="transition-delay: 250ms"
+          @submit.prevent
+        >
           <div>
             <label for="name" class="block text-sm font-medium text-gray-300 mb-1.5">Nombre</label>
             <input
@@ -81,6 +95,22 @@
 </template>
 
 <script setup>
+const sectionRef = ref(null)
+const isVisible = ref(false)
+
+onMounted(() => {
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) {
+        isVisible.value = true
+        observer.disconnect()
+      }
+    },
+    { threshold: 0.1 }
+  )
+  if (sectionRef.value) observer.observe(sectionRef.value)
+})
+
 const form = reactive({
   name: '',
   email: '',
